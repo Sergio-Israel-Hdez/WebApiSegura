@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Renta de Peliculas foo</title>
+</head>
+<body>
+
+    <center>
+<h3 id="renta-de-peliculas-foo">Renta de Peliculas <img src="https://img.shields.io/jenkins/s/https/builds.apache.org/job/commons-lang.svg" alt="foo" /></h3>
+<blockquote>
+<h3 id="api-segura-con-json-web-token">Api segura con Json Web Token</h3>
+</blockquote>
+</center>
+<hr>
+<h3 id="importante">Importante</h3>
+<pre><code>El jwt, crear un array claim donde se setean los roles
+para ser usados en authorization(Roles=).
+</code></pre>
+<h3 id="ejmplo-de-claim">Ejmplo de Claim</h3>
+<pre><code class="language-csharp">var claims = new[] {
+                new Claim(JwtRegisteredClaimNames.Sub, userInfo.Nombre+&quot; &quot;+userInfo.Apellido),
+                new Claim(JwtRegisteredClaimNames.Email, userInfo.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role,userInfo.Rol.ToString()),
+                new Claim(ClaimTypes.PrimarySid,userInfo.Idusuario.ToString())
+            };
+</code></pre>
+<h3 id="agregando-los-claim-al-token">Agregando los Claim al token.</h3>
+<pre><code class="language-csharp">            var token = new JwtSecurityToken(_config[&quot;Jwt:Issuer&quot;],
+                _config[&quot;Jwt:Issuer&quot;],
+                claims,
+                expires:DateTime.Now.AddMinutes(120),
+                signingCredentials:credentials
+                );
+</code></pre>
+<h3 id="using-utilizados-para-la-creacion-de-token">Using utilizados para la creacion de token</h3>
+<pre><code class="language-csharp">using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
+</code></pre>
+<h3 id="roles">Roles</h3>
+<pre>
+- 1 (usuario standar)
+- 2 (administrador)
+</pre>
+<h3 id="segurad-en-el-controlador">Segurad en el controlador</h3>
+<blockquote>
+<p>Ejemplo de controlador con autorización.</p>
+</blockquote>
+<pre><code class="language-csharp">    [Route(&quot;api/[controller]&quot;)]
+    [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,Roles = &quot;1,2&quot;)]
+    public class PeliculaController : ControllerBase
+    {
+        private Models.BD.RENTMOVIEContext renta = new Models.BD.RENTMOVIEContext();
+        [HttpGet]
+        public IEnumerable&lt;Models.BD.Pelicula&gt; Get()
+        {
+            return renta.Pelicula.ToList();
+        }
+    }
+</code></pre>
+
+
+</body>
+</html>
