@@ -22,5 +22,13 @@ namespace WebApiSegura.Controllers
         {
             return renta.Pelicula.ToList();
         }
+        [HttpPost]
+        [Route("[action]")]
+        public IEnumerable<Models.BD.Pelicula>getPeliculasUsuario([FromBody]Models.BD.Usuario usuario)
+        {
+            var subselect = (from re in renta.Reserva where re.Idusuario==usuario.Idusuario && re.Estado!=0 select re.Idpelicula).ToList();
+            var result = from pe in renta.Pelicula where !subselect.Contains(pe.Idpelicula) select pe;
+            return result;
+        }
     }
 }
