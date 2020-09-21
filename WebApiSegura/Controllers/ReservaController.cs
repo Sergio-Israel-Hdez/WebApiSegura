@@ -11,11 +11,11 @@ namespace WebApiSegura.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,Roles ="1")]
     public class ReservaController : ControllerBase
     {
         private Models.BD.RENTMOVIEContext db = new Models.BD.RENTMOVIEContext();
-        [Authorize(Roles ="1")]
+        
         [HttpPost]
         [Route("[action]")]
         public IEnumerable<dynamic> GetReservas([FromBody]Models.BD.Usuario usuario)
@@ -48,11 +48,14 @@ namespace WebApiSegura.Controllers
 
         }
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(int? id)
         {
-            Models.BD.Reserva ReservaFind = db.Reserva.Find(id);
-            ReservaFind.Estado = 0;
-            db.SaveChanges();
+            if (id!=null)
+            {
+                Models.BD.Reserva ReservaFind = db.Reserva.Find(id);
+                ReservaFind.Estado = 0;
+                db.SaveChanges();
+            }
         }
     }
 }
